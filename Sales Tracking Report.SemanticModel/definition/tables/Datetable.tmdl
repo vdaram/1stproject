@@ -1,0 +1,56 @@
+table Datetable
+	lineageTag: 4742966d-dfe5-4f7f-b1e8-11c36858bc15
+
+	column Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: a0a1c2e3-c9e7-4ee2-bd0a-4b1d1ea3c2a8
+		summarizeBy: none
+		sourceColumn: Date
+
+		variation Variation
+			isDefault
+			relationship: caa1fb50-47f5-47c7-9471-af31239d9009
+			defaultHierarchy: LocalDateTable_ab9072d9-0a99-4a9c-bae7-ed25384a26ce.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Month Name'
+		dataType: string
+		lineageTag: 33b308cc-d014-43c9-870d-8250ec9d2f8e
+		summarizeBy: none
+		sourceColumn: Month Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column Day
+		dataType: int64
+		formatString: 0
+		lineageTag: 9fd2058e-21ce-43a1-9ea6-acc77021f10c
+		summarizeBy: sum
+		sourceColumn: Day
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Datetable = m
+		mode: import
+		source =
+				let
+				    StartDate = #date(2021, 1, 1),   // starting date
+				    NumberOfDays = 1461,               // how many dates to generate
+				    Step = #duration(1,0,0,0),       // step = 1 day
+				    DateList = List.Dates(StartDate, NumberOfDays, Step),
+				    #"Converted to Table" = Table.FromList(DateList, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Converted to Table",{{"Column1", type date}}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Changed Type",{{"Column1", "Date"}}),
+				    #"Inserted Month Name" = Table.AddColumn(#"Renamed Columns", "Month Name", each Date.MonthName([Date]), type text),
+				    #"Inserted Day" = Table.AddColumn(#"Inserted Month Name", "Day", each Date.Day([Date]), Int64.Type)
+				in
+				    #"Inserted Day"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

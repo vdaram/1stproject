@@ -1,0 +1,136 @@
+table Sales
+	lineageTag: 68876ac9-2a45-43aa-ae5b-22b45bcef837
+
+	measure Total_Sales = sumx(Sales,Sales[Units Sold]*Sales[Price Per Unit])
+		lineageTag: 3ca42970-392b-41a0-b1d1-6a359440b871
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Transaction ID'
+		dataType: int64
+		formatString: 0
+		lineageTag: bb90bc49-8a2d-4130-b108-79b35109814f
+		summarizeBy: count
+		sourceColumn: Transaction ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 40a6fe35-2c0f-406e-b98b-3ee33684a694
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Day Name'
+		dataType: string
+		lineageTag: b142d706-8ef8-42f9-b2a0-48f412d6520d
+		summarizeBy: none
+		sourceColumn: Day Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column Brand
+		dataType: string
+		lineageTag: add69b36-9539-4433-a407-d574a8d10bf7
+		summarizeBy: none
+		sourceColumn: Brand
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Units Sold'
+		dataType: int64
+		formatString: 0
+		lineageTag: 68780428-a427-4728-a3a5-ce89e8356445
+		summarizeBy: sum
+		sourceColumn: Units Sold
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Price Per Unit'
+		dataType: double
+		lineageTag: e6de91c0-9d80-4513-b3b1-b1eeb0906068
+		summarizeBy: sum
+		sourceColumn: Price Per Unit
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Customer Name'
+		dataType: string
+		lineageTag: 148a97d0-5541-4e27-953f-b3a72b8d7ea7
+		summarizeBy: none
+		sourceColumn: Customer Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Customer Age'
+		dataType: int64
+		formatString: 0
+		lineageTag: 83e308e2-ae79-4efe-82f9-270a9469aba4
+		summarizeBy: sum
+		sourceColumn: Customer Age
+
+		annotation SummarizationSetBy = Automatic
+
+	column City
+		dataType: string
+		lineageTag: 62055cb0-5337-4021-aead-2467b069d29d
+		summarizeBy: none
+		sourceColumn: City
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Payment Method'
+		dataType: string
+		lineageTag: d264a7c0-410f-4de4-a69a-9034a05fe905
+		summarizeBy: none
+		sourceColumn: Payment Method
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Customer Ratings'
+		dataType: int64
+		formatString: 0
+		lineageTag: 2b6858eb-38bc-4fae-a707-2ec5d8507b8e
+		summarizeBy: sum
+		sourceColumn: Customer Ratings
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Mobile Model'
+		dataType: string
+		lineageTag: 9b651321-5422-4275-a0c4-1be3222a41a2
+		summarizeBy: none
+		sourceColumn: Mobile Model
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Sales = m
+		mode: import
+		source =
+				let
+				    Source = Excel.Workbook(File.Contents("D:\Power BI\Training\Samples\Power_BI_Dashboard-main\Mobile Sales Data.xlsx"), null, true),
+				    Sheet1_Sheet = Source{[Item="Sheet1",Kind="Sheet"]}[Data],
+				    #"Promoted Headers" = Table.PromoteHeaders(Sheet1_Sheet, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Transaction ID", Int64.Type}, {"Day", Int64.Type}, {"Month", Int64.Type}, {"Year", Int64.Type}, {"Day Name", type text}, {"Brand", type text}, {"Units Sold", Int64.Type}, {"Price Per Unit", type number}, {"Customer Name", type text}, {"Customer Age", Int64.Type}, {"City", type text}, {"Payment Method", type text}, {"Customer Ratings", Int64.Type}, {"Mobile Model", type text}}),
+				    #"Inserted Merged Column" = Table.AddColumn(#"Changed Type", "Merged", each Text.Combine({Text.From([Day], "en-IN"), Text.From([Month], "en-IN"), Text.From([Year], "en-IN")}, "-"), type text),
+				    #"Renamed Columns" = Table.RenameColumns(#"Inserted Merged Column",{{"Merged", "Date"}}),
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Renamed Columns",{{"Date", type date}}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Changed Type1",{"Day", "Month", "Year"}),
+				    #"Reordered Columns" = Table.ReorderColumns(#"Removed Columns",{"Transaction ID", "Date", "Day Name", "Brand", "Units Sold", "Price Per Unit", "Customer Name", "Customer Age", "City", "Payment Method", "Customer Ratings", "Mobile Model"}),
+				    #"Removed Columns1" = Table.RemoveColumns(#"Reordered Columns",{"Day Name"}),
+				    #"Inserted Day Name" = Table.AddColumn(#"Removed Columns1", "Day Name", each Date.DayOfWeekName([Date]), type text),
+				    #"Reordered Columns1" = Table.ReorderColumns(#"Inserted Day Name",{"Transaction ID", "Date", "Day Name", "Brand", "Units Sold", "Price Per Unit", "Customer Name", "Customer Age", "City", "Payment Method", "Customer Ratings", "Mobile Model"})
+				in
+				    #"Reordered Columns1"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
