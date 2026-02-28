@@ -120,7 +120,7 @@
                           [
                             {
                               "Literal": {
-                                "Value": "'January'"
+                                "Value": "'July'"
                               }
                             }
                           ]
@@ -159,7 +159,7 @@
                                 "0": [
                                   {
                                     "Literal": {
-                                      "Value": "'January'"
+                                      "Value": "'July'"
                                     }
                                   }
                                 ]
@@ -183,7 +183,7 @@
                         },
                         "valueMap": [
                           {
-                            "0": "January"
+                            "0": "July"
                           }
                         ]
                       }
@@ -466,5 +466,34 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "82116472d67057c5810e",
+        "field": {
+          "HierarchyLevel": {
+            "Expression": {
+              "Hierarchy": {
+                "Expression": {
+                  "PropertyVariationSource": {
+                    "Expression": {
+                      "SourceRef": {
+                        "Entity": "Datetable"
+                      }
+                    },
+                    "Name": "Variation",
+                    "Property": "Date"
+                  }
+                },
+                "Hierarchy": "Date Hierarchy"
+              }
+            },
+            "Level": "Month"
+          }
+        },
+        "type": "Categorical"
+      }
+    ]
   }
 }
