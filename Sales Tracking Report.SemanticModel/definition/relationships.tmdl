@@ -1,0 +1,10 @@
+relationship 091cc51d-8dfe-4e40-a37d-8293c9a66c93
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Sheet1.Date
+	toColumn: LocalDateTable_573335d3-7a77-4dbc-9c57-f219ec421dac.Date
+
+relationship 2cf85739-f0ba-4e3f-9b8b-a59ca9dd222a
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Sheet1.Datemodified
+	toColumn: LocalDateTable_f92ac30a-cb39-4141-a56f-864990a283e4.Date
+

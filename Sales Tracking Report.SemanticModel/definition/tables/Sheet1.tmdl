@@ -1,0 +1,74 @@
+table Sheet1
+	lineageTag: 796be4e0-9eb2-4bbf-9616-9f6b097dbc7f
+
+	refreshPolicy
+		policyType: basic
+		rollingWindowGranularity: year
+		rollingWindowPeriods: 5
+		incrementalGranularity: day
+		incrementalPeriods: 5
+		sourceExpression =
+			let
+			    Source = Excel.Workbook(File.Contents("C:\Users\Venkanna D\Desktop\Test.xlsx"), null, true),
+			    Sheet1_Sheet = Source{[Item="Sheet1",Kind="Sheet"]}[Data],
+			    #"Promoted Headers" = Table.PromoteHeaders(Sheet1_Sheet, [PromoteAllScalars=true]),
+			    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"ID", Int64.Type}, {"Date", type date}, {"Datemodified", type datetime}}),
+			    #"Filtered Rows" = Table.SelectRows(#"Changed Type", each [Datemodified] >= RangeStart and [Datemodified] <= RangeEnd)
+			in
+			    #"Filtered Rows"
+
+	column ID
+		dataType: int64
+		formatString: 0
+		lineageTag: edab4160-4ec7-4e61-a5f5-b6a475375cbb
+		summarizeBy: count
+		sourceColumn: ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 7d67363e-70ea-430b-a550-312a34d4dbb6
+		summarizeBy: none
+		sourceColumn: Date
+
+		variation Variation
+			isDefault
+			relationship: 091cc51d-8dfe-4e40-a37d-8293c9a66c93
+			defaultHierarchy: LocalDateTable_573335d3-7a77-4dbc-9c57-f219ec421dac.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Datemodified
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: bcf7c14a-ca80-4028-8529-8e2a55f700f4
+		summarizeBy: none
+		sourceColumn: Datemodified
+
+		variation Variation
+			isDefault
+			relationship: 2cf85739-f0ba-4e3f-9b8b-a59ca9dd222a
+			defaultHierarchy: LocalDateTable_f92ac30a-cb39-4141-a56f-864990a283e4.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Sheet1 = m
+		mode: import
+		source =
+				let
+				    Source = Excel.Workbook(File.Contents("C:\Users\Venkanna D\Desktop\Test.xlsx"), null, true),
+				    Sheet1_Sheet = Source{[Item="Sheet1",Kind="Sheet"]}[Data],
+				    #"Promoted Headers" = Table.PromoteHeaders(Sheet1_Sheet, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"ID", Int64.Type}, {"Date", type date}, {"Datemodified", type datetime}}),
+				    #"Filtered Rows" = Table.SelectRows(#"Changed Type", each [Datemodified] >= RangeStart and [Datemodified] <= RangeEnd)
+				in
+				    #"Filtered Rows"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
